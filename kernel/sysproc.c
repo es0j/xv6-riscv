@@ -5,6 +5,11 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "stat.h"
+
+
+extern uint64 getFreeMem();
+extern uint64 getNproc();
 
 uint64
 sys_exit(void)
@@ -93,6 +98,26 @@ sys_uptime(void)
 uint64
 sys_trace(void)
 {
-  argint(0, &myproc()->traceMask);  
+  argint(0, &myproc()->traceMask); 
   return 0;
 }
+
+uint64
+sys_sysinfo(void)
+{
+  struct sysinfoStruct info; 
+  uint64 uptr; 
+  argaddr(0,&uptr);
+  struct proc *p= myproc();
+  
+  info.freemem= getFreeMem();
+  info.nproc  = getNproc();
+
+  if(copyout(p->pagetable,uptr,(char*)&info,sizeof(info)) < 0){
+    printf("error copying to user\n");
+  }
+  
+
+  return 0;
+}
+

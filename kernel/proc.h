@@ -106,3 +106,5 @@ struct proc {
   char name[16];               // Process name (debugging)
   int traceMask;
 };
+
+uint64 getNproc();

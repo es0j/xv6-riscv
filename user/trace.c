@@ -3,8 +3,6 @@
 #include "kernel/syscall.h"
 #include "user/user.h"
 
-char buf[512];
-
 int
 main(int argc, char *argv[])
 {

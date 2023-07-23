@@ -681,3 +681,13 @@ procdump(void)
     printf("\n");
   }
 }
+
+uint64 getNproc(){
+  uint64 unused=0;
+  for(int i=0;i<NPROC;i++){
+    if(proc[i].state==UNUSED){
+      unused++;
+    }
+  }
+  return unused;
+}
