@@ -133,3 +133,35 @@ printfinit(void)
   initlock(&pr.lock, "pr");
   pr.locking = 1;
 }
+
+void backtrace(int deep){
+  uint64 *sf_ptr;
+
+  /*
+  printf("sp dump\n");
+  sf_ptr = (uint64 *)r_sp();
+  for(int i=0;i<12;i++){
+    printf("%p : %p\n",sf_ptr,*sf_ptr);
+    sf_ptr++;
+  }
+
+  printf("fp dump\n");
+  sf_ptr = (uint64 *)r_fp();
+  for(int i=0;i<12;i++){
+    printf("%p : %p\n",sf_ptr,*sf_ptr);
+    sf_ptr++;
+  }
+
+  printf("task\n");*/
+  
+  /*
+  0x0000000080002ce6 /home/esoj/xv6-riscv/kernel/sysproc.c:46
+  0x0000000080002bd6 /home/esoj/xv6-riscv/kernel/syscall.c:135
+  0x00000000800028cc /home/esoj/xv6-riscv/kernel/trap.c:42
+  */
+  sf_ptr = (uint64 *)r_fp();
+  for(int i=0;i<deep;i++){
+    printf("%p\n",*(sf_ptr-1));
+    sf_ptr = (uint64 *)*(sf_ptr-2);
+  }
+}
