@@ -61,6 +61,18 @@ thread_schedule(void)
      * Invoke thread_switch to switch from t to next_thread:
      * thread_switch(??, ??);
      */
+
+
+    //printf("p2 base: %p\n",&t->stack);
+    //printf("p2 fim : %p\n",&t->stack[STACK_SIZE-8]);
+    //printf("p2 dado : %p\n",t->stack[STACK_SIZE-8]);
+
+    //printf("p1 base: %p\n",&current_thread->stack);
+    //printf("p1 fim : %p\n",&current_thread->stack[STACK_SIZE-8]);
+    //printf("p1 dado : %p\n",current_thread->stack[STACK_SIZE-8]);
+
+
+    thread_switch((uint64)&t->stack[STACK_SIZE-8],(uint64)&current_thread->stack[STACK_SIZE-8]);
   } else
     next_thread = 0;
 }
@@ -75,6 +87,12 @@ thread_create(void (*func)())
   }
   t->state = RUNNABLE;
   // YOUR CODE HERE
+  *(uint64*)(&t->stack[STACK_SIZE - 8]) = (uint64)func; 
+  *(uint64*)(&t->stack[STACK_SIZE - 16]) = (uint64)(&t->stack[STACK_SIZE - 256]); 
+  *(uint64*)(&t->stack[STACK_SIZE - 24]) = (uint64)(&t->stack[STACK_SIZE - 256]); 
+  
+  
+  
 }
 
 void 
