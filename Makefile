@@ -176,4 +176,6 @@ qemu: $K/kernel fs.img
 qemu-gdb: $K/kernel .gdbinit fs.img
 	@echo "*** Now run 'gdb' in another window." 1>&2
 	$(QEMU) $(QEMUOPTS) -S $(QEMUGDB)
-
+	
+ph: notxv6/ph.c
+	gcc -o ph -g -O2 notxv6/ph.c -pthread
