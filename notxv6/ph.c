@@ -8,6 +8,23 @@
 #define NBUCKET 5
 #define NKEYS 100000
 
+/*
+gcc -o ph -g -O2 notxv6/ph.c -pthread
+100000 puts, 3.206 seconds, 31194 puts/second
+0: 16507 keys missing
+1: 16507 keys missing
+200000 gets, 7.435 seconds, 26899 gets/second
+esoj@DESKTOP-8K4F0FL:~/xv6-riscv$ make ph && ./ph 2
+gcc -o ph -g -O2 notxv6/ph.c -pthread
+100000 puts, 3.972 seconds, 25177 puts/second
+0: 0 keys missing
+1: 0 keys missing
+200000 gets, 6.840 seconds, 29241 gets/second
+
+Solved :)
+*/
+
+pthread_mutex_t mutex;
 struct entry {
   int key;
   int value;
@@ -52,7 +69,9 @@ void put(int key, int value)
     e->value = value;
   } else {
     // the new is new.
+    pthread_mutex_lock(&mutex);
     insert(key, value, &table[i], table[i]);
+    pthread_mutex_unlock(&mutex);
   }
 
 }
