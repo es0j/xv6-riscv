@@ -7,6 +7,13 @@
 static int nthread = 1;
 static int round = 0;
 
+
+/*
+esoj@DESKTOP-8K4F0FL:~/xv6-riscv$ make barrier && ./barrier 2
+gcc -o barrier -g -O2 notxv6/barrier.c -pthread
+OK; passed
+*/
+
 struct barrier {
   pthread_mutex_t barrier_mutex;
   pthread_cond_t barrier_cond;
@@ -25,6 +32,35 @@ barrier_init(void)
 static void 
 barrier()
 {
+    //can use this
+    //pthread_cond_wait(&bstate.barrier_cond, &bstate.barrier_mutex);
+    //pthread_cond_broadcast(&bstate.barrier_cond);
+    
+
+    
+    //allert other threads.
+    pthread_mutex_lock(&bstate.barrier_mutex);
+    bstate.nthread++;
+    
+
+    if(nthread==bstate.nthread){
+        //printf("all ok\n");
+        bstate.round++;
+        bstate.nthread = 0;
+        //wake up all threads
+        pthread_cond_broadcast(&bstate.barrier_cond);
+        
+    }
+    else{
+        //sleep until all have finished
+        pthread_cond_wait(&bstate.barrier_cond, &bstate.barrier_mutex); 
+        
+    }
+
+    pthread_mutex_unlock(&bstate.barrier_mutex);
+
+
+  
 
 }
 
@@ -37,6 +73,7 @@ thread(void *xa)
 
   for (i = 0; i < 20000; i++) {
     int t = bstate.round;
+    ///printf("i:%i t:%i\n",i,t);
     assert (i == t);
     barrier();
     usleep(random() % 100);
