@@ -179,3 +179,6 @@ qemu-gdb: $K/kernel .gdbinit fs.img
 	
 ph: notxv6/ph.c
 	gcc -o ph -g -O2 notxv6/ph.c -pthread
+
+barrier: notxv6/barrier.c
+	gcc -o barrier -g -O2 notxv6/barrier.c -pthread
