@@ -146,6 +146,15 @@ found:
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
 
+
+  // Allocate a usyscallstruct page.
+  if((p->usyscall_ptr = (struct usyscallstruct *)kalloc()) == 0){
+    freeproc(p);
+    release(&p->lock);
+    return 0;
+  }
+  p->usyscall_ptr->pid = p->pid;
+
   return p;
 }
 
@@ -169,6 +178,8 @@ freeproc(struct proc *p)
   p->killed = 0;
   p->xstate = 0;
   p->state = UNUSED;
+
+  kfree(p->usyscall_ptr);
 }
 
 // Create a user page table for a given process, with no user memory,
@@ -182,7 +193,7 @@ proc_pagetable(struct proc *p)
   pagetable = uvmcreate();
   if(pagetable == 0)
     return 0;
-
+               
   // map the trampoline code (for system call return)
   // at the highest user virtual address.
   // only the supervisor uses it, on the way
@@ -202,6 +213,16 @@ proc_pagetable(struct proc *p)
     return 0;
   }
 
+
+  // map the usyscall_ptr
+  if(mappages(pagetable, USYSCALLADDR, PGSIZE,
+              (uint64)(p->usyscall_ptr), PTE_R | PTE_W) < 0){
+    printf("failed mapping pages\n");
+    uvmunmap(pagetable, USYSCALLADDR, 1, 0);
+    uvmfree(pagetable, 0);
+    return 0;
+  }
+
   return pagetable;
 }
 
@@ -212,6 +233,7 @@ proc_freepagetable(pagetable_t pagetable, uint64 sz)
 {
   uvmunmap(pagetable, TRAMPOLINE, 1, 0);
   uvmunmap(pagetable, TRAPFRAME, 1, 0);
+  uvmunmap(pagetable, USYSCALLADDR, 1, 0);
   uvmfree(pagetable, sz);
 }
 

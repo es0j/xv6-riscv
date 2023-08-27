@@ -3,6 +3,11 @@
 #include "kernel/fcntl.h"
 #include "user/user.h"
 
+#include "kernel/riscv.h"
+#include "kernel/memlayout.h"
+
+
+
 //
 // wrapper so that it's OK if main() does not call exit().
 //
@@ -144,4 +149,12 @@ void *
 memcpy(void *dst, const void *src, uint n)
 {
   return memmove(dst, src, n);
+}
+
+
+int
+ugetpid(void)
+{
+  struct usyscallstruct *u = (struct usyscallstruct *)USYSCALLADDR;
+  return u->pid;
 }
