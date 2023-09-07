@@ -53,7 +53,7 @@ ugetpid_test()
 void
 pgaccess_test()
 {
-  /*char *buf;
+  char *buf;
   unsigned int abits;
   printf("pgaccess_test starting\n");
   testname = "pgaccess_test";
@@ -68,5 +68,5 @@ pgaccess_test()
   if (abits != ((1 << 1) | (1 << 2) | (1 << 30)))
     err("incorrect access bits set");
   free(buf);
-  printf("pgaccess_test: OK\n");*/
+  printf("pgaccess_test: OK\n");
 }
